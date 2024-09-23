@@ -32,7 +32,7 @@
                     android:layout_marginEnd="24dp">
 
                     <TextView
-                        android:id="@+id/welcome"
+                        android:id="@+id/welcomeTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="welcome"
@@ -41,17 +41,17 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/name"
+                        android:id="@+id/nameTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tom Johnson"
                         android:textColor="@color/white"
                         android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/welcome" />
+                        app:layout_constraintStart_toStartOf="@+id/welcomeTextView"
+                        app:layout_constraintTop_toBottomOf="@+id/welcomeTextView" />
 
                     <ImageView
-                        android:id="@+id/bell"
+                        android:id="@+id/bellImageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
@@ -61,24 +61,24 @@
                         app:srcCompat="@drawable/bell" />
 
                     <ImageView
-                        android:id="@+id/red_circle"
+                        android:id="@+id/notificationImageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:layout_constraintBottom_toTopOf="@+id/bell"
-                        app:layout_constraintEnd_toEndOf="@+id/bell"
-                        app:layout_constraintStart_toEndOf="@+id/bell"
-                        app:layout_constraintTop_toTopOf="@+id/bell"
+                        app:layout_constraintBottom_toTopOf="@+id/bellImageView"
+                        app:layout_constraintEnd_toEndOf="@+id/bellImageView"
+                        app:layout_constraintStart_toEndOf="@+id/bellImageView"
+                        app:layout_constraintTop_toTopOf="@+id/bellImageView"
                         app:srcCompat="@drawable/red_circle" />
 
                     <TextView
-                        android:id="@+id/notificationCount"
+                        android:id="@+id/notificationCountTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1"
-                        app:layout_constraintBottom_toBottomOf="@+id/red_circle"
-                        app:layout_constraintEnd_toEndOf="@+id/red_circle"
-                        app:layout_constraintStart_toStartOf="@+id/red_circle"
-                        app:layout_constraintTop_toTopOf="@+id/red_circle" />
+                        app:layout_constraintBottom_toBottomOf="@+id/notificationImageView"
+                        app:layout_constraintEnd_toEndOf="@+id/notificationImageView"
+                        app:layout_constraintStart_toStartOf="@+id/notificationImageView"
+                        app:layout_constraintTop_toTopOf="@+id/notificationImageView" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
