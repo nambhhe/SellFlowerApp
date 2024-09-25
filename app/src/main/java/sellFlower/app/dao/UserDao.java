@@ -21,10 +21,4 @@ public interface UserDao {
 
     @Delete
     void deleteUser(User user);
-
-    @Query("SELECT * FROM user")
-    ArrayList<User> getAllUsers();
-
-    @Query("SELECT * FROM user WHERE id = :UserId")
-    User getUserById(int UserId);
 }
