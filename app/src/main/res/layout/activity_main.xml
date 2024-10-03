@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.MainActivity">
+    tools:context=".controller.activity.MainActivity">
 
     <ScrollView
         android:id="@+id/mainActivityScrollView"
@@ -16,7 +16,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="30dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -128,7 +129,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="Discount 20% for \nHeadphones"
+                    android:text="Discount 20% for \nRoses"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -316,7 +317,9 @@
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:paddingStart="12dp"
-                android:paddingEnd="12dp" />
+                android:paddingTop="12dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="12dp" />
 
         </LinearLayout>
     </ScrollView>
