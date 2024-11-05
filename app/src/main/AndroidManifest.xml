@@ -7,12 +7,12 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true">
-<!--        android:theme="@style/AppTheme">-->
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SellFlowerApp">
 
         <!-- LoginActivity as the launcher activity -->
         <activity android:name=".controller.activity.LoginActivity"
-            android:theme="@style/Theme.AppCompat"
+
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +21,7 @@
         </activity>
 
         <!-- MainActivity without launcher intent-filter -->
-<!--        <activity android:name=".controller.activity.MainActivity" />-->
+        <activity android:name=".controller.activity.MainActivity" />
 
         <!-- Other activities -->
 <!--        <activity android:name=".controller.activity.SignUpActivity" />-->
