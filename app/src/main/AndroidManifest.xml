@@ -23,6 +23,7 @@
         <!-- MainActivity without launcher intent-filter -->
         <activity android:name=".controller.activity.MainActivity" />
 
+
         <!-- Other activities -->
 <!--        <activity android:name=".controller.activity.SignUpActivity" />-->
         <activity android:name=".controller.activity.FlowerDetailActivity" />
