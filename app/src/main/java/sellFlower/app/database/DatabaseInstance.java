@@ -15,13 +15,14 @@ public class DatabaseInstance {
                     instance = Room.databaseBuilder(context.getApplicationContext(),
                                     SellFlowerDatabase.class, "SellFlower_DB")
                             .allowMainThreadQueries()
-                            .addMigrations(MIGRATION_1_2)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                             .fallbackToDestructiveMigration() // Add this line for development
                             .build();
                 }
             }
         }
         return instance;
+
     }
 
     private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
@@ -38,4 +39,11 @@ public class DatabaseInstance {
                     "password TEXT NOT NULL DEFAULT '')");
         }
     };
+    private static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            // This migration doesn't need to do anything, it's just to bump the version
+        }
+    };
+
 }
