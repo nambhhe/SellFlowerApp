@@ -23,9 +23,13 @@ public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.Viewhold
     ArrayList<Flower> itemList;
     Context context;
     ViewholderPopularListBinding binding;
-
-    public PopularAdapter(ArrayList<Flower> itemList) {
+    private OnFlowerClickListener onFlowerClickListener;
+    public interface OnFlowerClickListener {
+        void onFlowerClick(int flowerId);
+    }
+    public PopularAdapter(ArrayList<Flower> itemList, OnFlowerClickListener listener) {
         this.itemList = itemList;
+        this.onFlowerClickListener = listener;
     }
 
     @NonNull
@@ -55,10 +59,13 @@ public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.Viewhold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Handle click
+                if (onFlowerClickListener != null) {
+                    onFlowerClickListener.onFlowerClick(itemList.get(position).getId());
+                }
             }
         });
     }
+
     @Override
     public int getItemCount() {
         return itemList.size();
@@ -69,4 +76,7 @@ public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.Viewhold
             super(binding.getRoot());
         }
     }
+
+
+
 }

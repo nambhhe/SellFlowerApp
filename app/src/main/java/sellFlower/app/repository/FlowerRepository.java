@@ -1,10 +1,12 @@
 package sellFlower.app.repository;
 
 import android.content.Context;
+import java.util.List;
+import java.util.ArrayList;
+
 import sellFlower.app.dao.FlowerDao;
 import sellFlower.app.database.DatabaseInstance;
 import sellFlower.app.model.Flower;
-import java.util.List;
 
 public class FlowerRepository {
     private FlowerDao flowerDao;
@@ -33,5 +35,29 @@ public class FlowerRepository {
         return flowerDao.getAllFeaturedFlowers();
     }
 
-    // Add more methods as needed for other operations
+    public Flower getFlowerById(int id) {
+        return flowerDao.getFlowerById(id);
+    }
+
+    public void updateFlower(Flower flower) {
+        flowerDao.updateFlower(flower);
+    }
+
+    public void deleteFlower(Flower flower) {
+        flowerDao.deleteFlower(flower);
+    }
+
+    public List<Flower> getFlowersByCategory(int categoryId) {
+        return flowerDao.getFlowersByCategory(categoryId);
+    }
+
+    public List<Flower> searchFlowers(String query) {
+        return flowerDao.searchFlowers("%" + query + "%");
+    }
+
+    public void updateStock(int flowerId, int newStock) {
+        flowerDao.updateStock(flowerId, newStock);
+    }
+
+
 }

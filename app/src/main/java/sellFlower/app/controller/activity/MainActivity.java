@@ -1,5 +1,6 @@
 package sellFlower.app.controller.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Window;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +15,7 @@ import sellFlower.app.repository.FlowerRepository;
 import sellFlower.app.model.Flower;
 import sellFlower.app.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PopularAdapter.OnFlowerClickListener{
 
     private FlowerRepository flowerRepository;
     ActivityMainBinding binding;
@@ -39,9 +40,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         List<Flower> itemList = flowerRepository.getAllFlowers();
-        binding.popularView.setAdapter(new PopularAdapter((ArrayList<Flower>) itemList));
+        binding.popularView.setAdapter(new PopularAdapter((ArrayList<Flower>) itemList,this));
     }
-
+    @Override
+    public void onFlowerClick(int flowerId) {
+        Intent intent = new Intent(MainActivity.this, FlowerDetailActivity.class);
+        intent.putExtra("FLOWER_ID", flowerId);
+        startActivity(intent);
+    }
     private void insertSampleFlowers() {
         // Check if the database is empty before inserting sample data
         if (flowerRepository.getAllFlowers().isEmpty()) {
