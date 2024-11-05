@@ -12,7 +12,7 @@ import sellFlower.app.model.User;
         User.class,
         Flower.class
         },
-        version = 1)
+        version = 2)
 public abstract class SellFlowerDatabase extends RoomDatabase {
 
     public abstract UserDao userDao();
