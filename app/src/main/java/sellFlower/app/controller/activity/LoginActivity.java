@@ -7,15 +7,16 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import sellFlower.app.database.DatabaseInstance;
-import sellFlower.app.dao.UserDao;
-import sellFlower.app.model.User;
+import com.google.android.material.snackbar.Snackbar;
+
 import sellFlower.app.databinding.ActivityLoginBinding;
+import sellFlower.app.model.User;
+import sellFlower.app.repository.UserRepository;
+import sellFlower.app.utils.ValidationUtils;
 
 public class LoginActivity extends AppCompatActivity {
-
     private ActivityLoginBinding binding;
-    private UserDao userDao;
+    private UserRepository userRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,59 +24,76 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        userDao = DatabaseInstance.getInstance(this).userDao();
+        userRepository = UserRepository.getInstance(this);
+        setupClickListeners();
+    }
 
-        binding.signInBtn.setOnClickListener(new View.OnClickListener() {
+    private void setupClickListeners() {
+        binding.signInBtn.setOnClickListener(v -> attemptLogin());
+
+        binding.signUpText.setOnClickListener(v ->
+                startActivity(new Intent(LoginActivity.this, SignUpActivity.class))
+        );
+
+        binding.forgotPasswordText.setOnClickListener(v ->
+                Snackbar.make(binding.getRoot(), "Forgot password feature coming soon!",
+                        Snackbar.LENGTH_SHORT).show()
+        );
+
+        binding.facebookSignInBtn.setOnClickListener(v ->
+                Snackbar.make(binding.getRoot(), "Facebook login coming soon!",
+                        Snackbar.LENGTH_SHORT).show()
+        );
+
+        binding.emailSignInBtn.setOnClickListener(v ->
+                Snackbar.make(binding.getRoot(), "Google login coming soon!",
+                        Snackbar.LENGTH_SHORT).show()
+        );
+    }
+
+    private void attemptLogin() {
+        String email = binding.emailInput.getText().toString().trim();
+        String password = binding.passwordInput.getText().toString().trim();
+
+        // Reset errors
+        binding.emailInput.setError(null);
+        binding.passwordInput.setError(null);
+
+        // Validate input
+        if (!ValidationUtils.isValidEmail(email)) {
+            binding.emailInput.setError("Please enter a valid email address");
+            binding.emailInput.requestFocus();
+            return;
+        }
+
+        if (password.isEmpty()) {
+            binding.passwordInput.setError("Password cannot be empty");
+            binding.passwordInput.requestFocus();
+            return;
+        }
+
+        // Show loading state
+        setLoadingState(true);
+
+        userRepository.loginUser(email, password, new UserRepository.DatabaseCallback<User>() {
             @Override
-            public void onClick(View v) {
-                String email = binding.emailInput.getText().toString();
-                String password = binding.passwordInput.getText().toString();
-
-                if (verifyUser(email, password)) {
-                    // Login successful
-                    Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    finish();
-                } else {
-                    Toast.makeText(LoginActivity.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
-                }
+            public void onSuccess(User user) {
+                setLoadingState(false);
+                // TODO: Save user session
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
             }
-        });
-//
-//        binding.signUpText.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
-//            }
-//        });
 
-        binding.forgotPasswordText.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                // TODO: Implement forgot password functionality
-                Toast.makeText(LoginActivity.this, "Forgot password clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        binding.facebookSignInBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: Implement Facebook sign-in
-                Toast.makeText(LoginActivity.this, "Facebook sign-in clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        binding.emailSignInBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: Implement email sign-in (if different from regular sign-in)
-                Toast.makeText(LoginActivity.this, "Email sign-in clicked", Toast.LENGTH_SHORT).show();
+            public void onError(String error) {
+                setLoadingState(false);
+                Snackbar.make(binding.getRoot(), error, Snackbar.LENGTH_LONG).show();
             }
         });
     }
 
-    private boolean verifyUser(String email, String password) {
-        User user = userDao.getUserByEmail(email);
-        return user != null && user.getPassword().equals(password);
+    private void setLoadingState(boolean isLoading) {
+        binding.signInBtn.setEnabled(!isLoading);
+        binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
     }
 }

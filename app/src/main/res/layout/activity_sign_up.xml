@@ -37,15 +37,18 @@
                     android:textStyle="bold" />
 
                 <EditText
+                    android:id="@+id/nameInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
                     android:background="@android:color/white"
                     android:hint="Full Name"
+                    android:inputType="textPersonName"
                     android:padding="10dp"
                     android:textSize="14sp" />
 
                 <EditText
+                    android:id="@+id/emailInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
@@ -56,6 +59,7 @@
                     android:textSize="14sp" />
 
                 <EditText
+                    android:id="@+id/passwordInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
@@ -65,7 +69,19 @@
                     android:padding="10dp"
                     android:textSize="14sp" />
 
+                <EditText
+                    android:id="@+id/confirmPasswordInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:background="@android:color/white"
+                    android:hint="Confirm Password"
+                    android:inputType="textPassword"
+                    android:padding="10dp"
+                    android:textSize="14sp" />
+
                 <Button
+                    android:id="@+id/signUpBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -77,45 +93,24 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Have An Account? "
+                        android:text="Already have an account? "
                         android:textColor="#000000"
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/loginText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sign In"
+                        android:text="Log In"
                         android:textColor="#8a6fc1"
                         android:textSize="14sp" />
                 </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_margin="20dp"
-                    android:background="#cccccc" />
-
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:background="#ffffff"
-                    android:text="Sign In With Facebook"
-                    android:textColor="#3b5998"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#ffffff"
-                    android:text="Sign In With Email"
-                    android:textColor="#34a853"
-                    android:textSize="16sp" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
