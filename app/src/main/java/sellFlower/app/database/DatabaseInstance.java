@@ -22,7 +22,6 @@ public class DatabaseInstance {
             }
         }
         return instance;
-
     }
 
     private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
@@ -39,11 +38,16 @@ public class DatabaseInstance {
                     "password TEXT NOT NULL DEFAULT '')");
         }
     };
+
     private static final Migration MIGRATION_2_3 = new Migration(2, 3) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
-            // This migration doesn't need to do anything, it's just to bump the version
+            // Create the cart_item table
+            database.execSQL("CREATE TABLE IF NOT EXISTS cart_item (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "flower_id INTEGER NOT NULL, " +
+                    "quantity INTEGER NOT NULL, " +
+                    "FOREIGN KEY (flower_id) REFERENCES flower(id) ON DELETE CASCADE)");
         }
     };
-
 }
