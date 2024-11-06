@@ -26,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
 
         userRepository = UserRepository.getInstance(this);
         setupClickListeners();
+        userRepository.insertSampleUsers(this);
     }
 
     private void setupClickListeners() {

@@ -37,28 +37,46 @@ public class UserRepository {
         boolean sampleUsersInserted = prefs.getBoolean("SAMPLE_USERS_INSERTED", false);
 
         if (!sampleUsersInserted) {
-            List<User> sampleUsers = new ArrayList<>();
-            sampleUsers.add(new User("John Doe", "john@example.com", "password123"));
-            sampleUsers.add(new User("Jane Smith", "jane@example.com", "securepass456"));
-            sampleUsers.add(new User("Alice Johnson", "alice@example.com", "alicepass789"));
+            new AsyncTask<Void, Void, Boolean>() {
+                @Override
+                protected Boolean doInBackground(Void... voids) {
+                    List<User> sampleUsers = new ArrayList<>();
+                    sampleUsers.add(new User("John Doe", "john@example.com", "password123"));
+                    sampleUsers.add(new User("Jane Smith", "jane@example.com", "securepass456"));
+                    sampleUsers.add(new User("Alice Johnson", "alice@example.com", "alicepass789"));
 
-            for (User user : sampleUsers) {
-                registerUser(user, new DatabaseCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void result) {
-                        Log.d("UserRepository", "Sample user inserted: " + user.getEmail());
+                    boolean allInserted = true;
+                    for (User user : sampleUsers) {
+                        try {
+                            User existingUser = userDao.getUserByEmail(user.getEmail());
+                            if (existingUser == null) {
+                                userDao.insertUser(user);
+                                Log.d("UserRepository", "Sample user inserted: " + user.getEmail());
+                            } else {
+                                Log.d("UserRepository", "Sample user already exists: " + user.getEmail());
+                            }
+                        } catch (Exception e) {
+                            Log.e("UserRepository", "Error inserting sample user: " + user.getEmail(), e);
+                            allInserted = false;
+                        }
                     }
+                    return allInserted;
+                }
 
-                    @Override
-                    public void onError(String error) {
-                        Log.e("UserRepository", "Error inserting sample user: " + error);
+                @Override
+                protected void onPostExecute(Boolean allInserted) {
+                    if (allInserted) {
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putBoolean("SAMPLE_USERS_INSERTED", true);
+                        editor.apply();
+                        Log.d("UserRepository", "All sample users inserted successfully");
+                    } else {
+                        Log.e("UserRepository", "Not all sample users were inserted");
                     }
-                });
-            }
-
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("SAMPLE_USERS_INSERTED", true);
-            editor.apply();
+                }
+            }.execute();
+        } else {
+            Log.d("UserRepository", "Sample users were already inserted");
         }
     }
     public void registerUser(User user, DatabaseCallback<Void> callback) {
