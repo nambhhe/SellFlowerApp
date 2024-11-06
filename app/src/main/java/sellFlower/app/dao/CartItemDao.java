@@ -13,6 +13,7 @@ import sellFlower.app.model.CartItem;
 
 @Dao
 public interface CartItemDao {
+
     @Insert
     void insert(CartItem cartItem);
 
@@ -33,4 +34,5 @@ public interface CartItemDao {
 
     @Query("SELECT SUM(price * quantity) FROM cart_items")
     double getTotalCartPrice();
+
 }

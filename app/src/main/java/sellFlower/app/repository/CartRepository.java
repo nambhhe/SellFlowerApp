@@ -9,9 +9,12 @@ import java.util.List;
 import sellFlower.app.dao.CartItemDao;
 import sellFlower.app.database.DatabaseInstance;
 import sellFlower.app.model.CartItem;
+import sellFlower.app.model.Flower;
+
 public class CartRepository {
     private CartItemDao cartItemDao;
     private static CartRepository instance;
+    private FlowerRepository flowerRepository;
 
     private CartRepository(Context context) {
         cartItemDao = DatabaseInstance.getInstance(context).cartItemDao();
@@ -24,17 +27,31 @@ public class CartRepository {
         return instance;
     }
 
-    public void addToCart(CartItem cartItem, UserRepository.DatabaseCallback<Void> callback) {
+    public void addToCart(int flowerId, int quantity, UserRepository.DatabaseCallback<Void> callback) {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... voids) {
                 try {
-                    CartItem existingItem = cartItemDao.getCartItemByFlowerId(cartItem.getFlowerId());
+                    // Get flower details from FlowerRepository
+                    Flower flower = flowerRepository.getFlowerById(flowerId);
+                    if (flower == null) {
+                        return false;
+                    }
+
+                    CartItem existingItem = cartItemDao.getCartItemByFlowerId(flowerId);
                     if (existingItem != null) {
-                        existingItem.setQuantity(existingItem.getQuantity() + cartItem.getQuantity());
+                        existingItem.setQuantity(existingItem.getQuantity() + quantity);
                         cartItemDao.update(existingItem);
                     } else {
-                        cartItemDao.insert(cartItem);
+                        // Create new CartItem with all required parameters
+                        CartItem newItem = new CartItem(
+                                flowerId,
+                                flower.getName(),
+                                flower.getPrice(),
+                                quantity,
+                                flower.getImageUrl()
+                        );
+                        cartItemDao.insert(newItem);
                     }
                     return true;
                 } catch (Exception e) {
@@ -54,20 +71,75 @@ public class CartRepository {
         }.execute();
     }
 
-    // Implement other methods (getCartItems, updateCartItem, removeFromCart, clearCart)
-    // ...
-
-    public void getTotalCartPrice(UserRepository.DatabaseCallback<Double> callback) {
-        new AsyncTask<Void, Void, Double>() {
+    public void updateCartItem(CartItem cartItem, UserRepository.DatabaseCallback<Void> callback) {
+        new AsyncTask<Void, Void, Boolean>() {
             @Override
-            protected Double doInBackground(Void... voids) {
-                return cartItemDao.getTotalCartPrice();
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    cartItemDao.update(cartItem);
+                    return true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
             }
 
             @Override
-            protected void onPostExecute(Double totalPrice) {
-                callback.onSuccess(totalPrice);
+            protected void onPostExecute(Boolean success) {
+                if (success) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Failed to update cart item");
+                }
             }
         }.execute();
     }
-}}
+
+    public void removeFromCart(CartItem cartItem, UserRepository.DatabaseCallback<Void> callback) {
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    cartItemDao.delete(cartItem);
+                    return true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean success) {
+                if (success) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Failed to remove item from cart");
+                }
+            }
+        }.execute();
+    }
+
+    public void clearCart(UserRepository.DatabaseCallback<Void> callback) {
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    cartItemDao.clearCart();
+                    return true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean success) {
+                if (success) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Failed to clear cart");
+                }
+            }
+        }.execute();
+    }
+}
