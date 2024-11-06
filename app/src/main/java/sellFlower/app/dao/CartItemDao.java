@@ -30,4 +30,7 @@ public interface CartItemDao {
 
     @Query("DELETE FROM cart_items")
     void clearCart();
+
+    @Query("SELECT SUM(price * quantity) FROM cart_items")
+    double getTotalCartPrice();
 }
