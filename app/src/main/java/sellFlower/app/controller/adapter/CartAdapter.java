@@ -1,79 +1,40 @@
 package sellFlower.app.controller.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
+
 import java.util.List;
+
 import sellFlower.app.R;
+import sellFlower.app.databinding.ItemCartBinding;
 import sellFlower.app.model.CartItem;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
+
     private List<CartItem> cartItems;
-    private Context context;
-    private OnCartItemUpdateListener onCartItemUpdateListener;
-    private OnCartItemRemoveListener onCartItemRemoveListener;
+    private CartItemListener listener;
 
-    public interface OnCartItemUpdateListener {
-        void onCartItemUpdate(CartItem cartItem);
-    }
-
-    public interface OnCartItemRemoveListener {
-        void onCartItemRemove(CartItem cartItem);
-    }
-
-    public CartAdapter(List<CartItem> cartItems, OnCartItemUpdateListener updateListener, OnCartItemRemoveListener removeListener) {
+    public CartAdapter(List<CartItem> cartItems, CartItemListener listener) {
         this.cartItems = cartItems;
-        this.onCartItemUpdateListener = updateListener;
-        this.onCartItemRemoveListener = removeListener;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public CartViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        context = parent.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.item_cart, parent, false);
-        return new CartViewHolder(view);
+        ItemCartBinding binding = ItemCartBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new CartViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
-        CartItem cartItem = cartItems.get(position);
-
-        holder.flowerNameTextView.setText(cartItem.getFlowerName());
-        holder.priceTextView.setText(String.format("$%.2f", cartItem.getPrice()));
-        holder.quantityTextView.setText(String.valueOf(cartItem.getQuantity()));
-
-        // Load image using Glide
-        Glide.with(context)
-                .load(cartItem.getImageUrl())
-                .placeholder(R.drawable.loading_placeholder) // Placeholder image
-                .error(R.drawable.error_placeholder) // Error image
-                .into(holder.flowerImageView);
-
-        holder.increaseButton.setOnClickListener(v -> {
-            cartItem.setQuantity(cartItem.getQuantity() + 1);
-            holder.quantityTextView.setText(String.valueOf(cartItem.getQuantity()));
-            onCartItemUpdateListener.onCartItemUpdate(cartItem);
-        });
-
-        holder.decreaseButton.setOnClickListener(v -> {
-            if (cartItem.getQuantity() > 1) {
-                cartItem.setQuantity(cartItem.getQuantity() - 1);
-                holder.quantityTextView.setText(String.valueOf(cartItem.getQuantity()));
-                onCartItemUpdateListener.onCartItemUpdate(cartItem);
-            }
-        });
-
-        holder.removeButton.setOnClickListener(v -> {
-            onCartItemRemoveListener.onCartItemRemove(cartItem);
-        });
+        CartItem item = cartItems.get(position);
+        holder.bind(item);
     }
 
     @Override
@@ -81,29 +42,45 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         return cartItems.size();
     }
 
-    public void updateItems(List<CartItem> newCartItems) {
-        this.cartItems = newCartItems;
-        notifyDataSetChanged();
+    class CartViewHolder extends RecyclerView.ViewHolder {
+        private ItemCartBinding binding;
+
+        CartViewHolder(ItemCartBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        void bind(CartItem item) {
+            binding.flowerNameTextView.setText(item.getFlowerName());
+            binding.priceTextView.setText(String.format("$%.2f", item.getPrice()));
+            binding.quantityTextView.setText(String.valueOf(item.getQuantity()));
+
+            Glide.with(itemView.getContext())
+                    .load(item.getImageUrl())
+                    .placeholder(R.drawable.loading_placeholder)
+                    .error(R.drawable.error_placeholder)
+                    .into(binding.flowerImageView);
+
+            binding.increaseButton.setOnClickListener(v -> {
+                int newQuantity = item.getQuantity() + 1;
+                listener.onQuantityChanged(item, newQuantity);
+                binding.quantityTextView.setText(String.valueOf(newQuantity));
+            });
+
+            binding.decreaseButton.setOnClickListener(v -> {
+                if (item.getQuantity() > 1) {
+                    int newQuantity = item.getQuantity() - 1;
+                    listener.onQuantityChanged(item, newQuantity);
+                    binding.quantityTextView.setText(String.valueOf(newQuantity));
+                }
+            });
+
+            binding.removeButton.setOnClickListener(v -> listener.onRemoveItem(item));
+        }
     }
 
-    static class CartViewHolder extends RecyclerView.ViewHolder {
-        TextView flowerNameTextView;
-        TextView priceTextView;
-        TextView quantityTextView;
-        ImageView flowerImageView;
-        Button increaseButton;
-        Button decreaseButton;
-        Button removeButton;
-
-        CartViewHolder(@NonNull View itemView) {
-            super(itemView);
-            flowerNameTextView = itemView.findViewById(R.id.flowerNameTextView);
-            priceTextView = itemView.findViewById(R.id.priceTextView);
-            quantityTextView = itemView.findViewById(R.id.quantityTextView);
-            flowerImageView = itemView.findViewById(R.id.flowerImageView);
-            increaseButton = itemView.findViewById(R.id.increaseButton);
-            decreaseButton = itemView.findViewById(R.id.decreaseButton);
-            removeButton = itemView.findViewById(R.id.removeButton);
-        }
+    public interface CartItemListener {
+        void onQuantityChanged(CartItem cartItem, int newQuantity);
+        void onRemoveItem(CartItem cartItem);
     }
 }

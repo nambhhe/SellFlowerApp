@@ -1,9 +1,7 @@
-// app/src/main/java/sellFlower/app/repository/CartRepository.java
 package sellFlower.app.repository;
 
 import android.content.Context;
 import android.os.AsyncTask;
-
 import java.util.List;
 
 import sellFlower.app.dao.CartItemDao;
@@ -18,6 +16,7 @@ public class CartRepository {
 
     private CartRepository(Context context) {
         cartItemDao = DatabaseInstance.getInstance(context).cartItemDao();
+        flowerRepository = FlowerRepository.getInstance(context);
     }
 
     public static CartRepository getInstance(Context context) {
@@ -27,7 +26,67 @@ public class CartRepository {
         return instance;
     }
 
-    public void addToCart(int flowerId, int quantity, UserRepository.DatabaseCallback<Void> callback) {
+    // Add DatabaseCallback interface
+    public interface DatabaseCallback<T> {
+        void onSuccess(T result);
+        void onError(String error);
+    }
+
+    // Method to get all cart items
+    public void getCartItems(DatabaseCallback<List<CartItem>> callback) {
+        new AsyncTask<Void, Void, List<CartItem>>() {
+            private String errorMessage;
+
+            @Override
+            protected List<CartItem> doInBackground(Void... voids) {
+                try {
+                    return cartItemDao.getAllCartItems();
+                } catch (Exception e) {
+                    errorMessage = e.getMessage();
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(List<CartItem> result) {
+                if (result != null) {
+                    callback.onSuccess(result);
+                } else {
+                    callback.onError(errorMessage != null ? errorMessage : "Failed to load cart items");
+                }
+            }
+        }.execute();
+    }
+
+    // Method to get total cart price
+    public void getTotalCartPrice(DatabaseCallback<Double> callback) {
+        new AsyncTask<Void, Void, Double>() {
+            private String errorMessage;
+
+            @Override
+            protected Double doInBackground(Void... voids) {
+                try {
+                    return cartItemDao.getTotalCartPrice();
+                } catch (Exception e) {
+                    errorMessage = e.getMessage();
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Double result) {
+                if (result != null) {
+                    callback.onSuccess(result);
+                } else {
+                    callback.onError(errorMessage != null ? errorMessage : "Failed to calculate total price");
+                }
+            }
+        }.execute();
+    }
+
+    public void addToCart(int flowerId, int quantity, DatabaseCallback<Void> callback) {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... voids) {
@@ -71,7 +130,7 @@ public class CartRepository {
         }.execute();
     }
 
-    public void updateCartItem(CartItem cartItem, UserRepository.DatabaseCallback<Void> callback) {
+    public void updateCartItem(CartItem cartItem, DatabaseCallback<Void> callback) {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... voids) {
@@ -95,7 +154,7 @@ public class CartRepository {
         }.execute();
     }
 
-    public void removeFromCart(CartItem cartItem, UserRepository.DatabaseCallback<Void> callback) {
+    public void removeFromCart(CartItem cartItem, DatabaseCallback<Void> callback) {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... voids) {
@@ -119,7 +178,7 @@ public class CartRepository {
         }.execute();
     }
 
-    public void clearCart(UserRepository.DatabaseCallback<Void> callback) {
+    public void clearCart(DatabaseCallback<Void> callback) {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... voids) {
@@ -138,6 +197,34 @@ public class CartRepository {
                     callback.onSuccess(null);
                 } else {
                     callback.onError("Failed to clear cart");
+                }
+            }
+        }.execute();
+    }
+
+    // Method to check if an item exists in cart
+    public void checkItemInCart(int flowerId, DatabaseCallback<Boolean> callback) {
+        new AsyncTask<Void, Void, Boolean>() {
+            private String errorMessage;
+
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    CartItem item = cartItemDao.getCartItemByFlowerId(flowerId);
+                    return item != null;
+                } catch (Exception e) {
+                    errorMessage = e.getMessage();
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if (result != null) {
+                    callback.onSuccess(result);
+                } else {
+                    callback.onError(errorMessage != null ? errorMessage : "Failed to check item in cart");
                 }
             }
         }.execute();
