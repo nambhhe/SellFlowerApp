@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide;
 import sellFlower.app.R;
 import sellFlower.app.databinding.ActivityFlowerDetailBinding;
 import sellFlower.app.model.Flower;
-import sellFlower.app.repository.CartRepository;
+//import sellFlower.app.repository.CartRepository;
 import sellFlower.app.repository.FlowerRepository;
 
 public class FlowerDetailActivity extends AppCompatActivity {
