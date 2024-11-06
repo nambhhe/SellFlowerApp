@@ -14,6 +14,7 @@ import sellFlower.app.controller.adapter.PopularAdapter;
 import sellFlower.app.repository.FlowerRepository;
 import sellFlower.app.model.Flower;
 import sellFlower.app.databinding.ActivityMainBinding;
+import sellFlower.app.repository.UserRepository;
 
 public class MainActivity extends AppCompatActivity implements PopularAdapter.OnFlowerClickListener{
 
@@ -28,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements PopularAdapter.On
 
         flowerRepository = FlowerRepository.getInstance(this);
 
+        UserRepository userRepository = UserRepository.getInstance(this);
+        userRepository.insertSampleUsers(this);
         setStatusBarColor();
         insertSampleFlowers(); // Add this line to insert sample flowers
         initRecyclerView();

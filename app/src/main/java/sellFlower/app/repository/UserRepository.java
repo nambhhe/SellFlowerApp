@@ -2,7 +2,12 @@
 package sellFlower.app.repository;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import sellFlower.app.database.DatabaseInstance;
 import sellFlower.app.dao.UserDao;
@@ -27,7 +32,35 @@ public class UserRepository {
         void onSuccess(T result);
         void onError(String error);
     }
+    public void insertSampleUsers(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        boolean sampleUsersInserted = prefs.getBoolean("SAMPLE_USERS_INSERTED", false);
 
+        if (!sampleUsersInserted) {
+            List<User> sampleUsers = new ArrayList<>();
+            sampleUsers.add(new User("John Doe", "john@example.com", "password123"));
+            sampleUsers.add(new User("Jane Smith", "jane@example.com", "securepass456"));
+            sampleUsers.add(new User("Alice Johnson", "alice@example.com", "alicepass789"));
+
+            for (User user : sampleUsers) {
+                registerUser(user, new DatabaseCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        Log.d("UserRepository", "Sample user inserted: " + user.getEmail());
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e("UserRepository", "Error inserting sample user: " + error);
+                    }
+                });
+            }
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("SAMPLE_USERS_INSERTED", true);
+            editor.apply();
+        }
+    }
     public void registerUser(User user, DatabaseCallback<Void> callback) {
         new AsyncTask<User, Void, Boolean>() {
             @Override
