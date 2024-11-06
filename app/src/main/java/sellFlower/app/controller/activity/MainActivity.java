@@ -2,6 +2,8 @@ package sellFlower.app.controller.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Window;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -32,8 +34,25 @@ public class MainActivity extends AppCompatActivity implements PopularAdapter.On
         UserRepository userRepository = UserRepository.getInstance(this);
         userRepository.insertSampleUsers(this);
         setStatusBarColor();
-        insertSampleFlowers(); // Add this line to insert sample flowers
+        insertSampleFlowers();
         initRecyclerView();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_cart) {
+            // Navigate to CartActivity
+            Intent intent = new Intent(MainActivity.this, CartActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setStatusBarColor() {
